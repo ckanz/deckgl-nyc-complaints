@@ -1,4 +1,4 @@
-#NYC Complaint Heatmap
+# NYC Complaint Heatmap
 
 This is a project visualising NYC complaint data using the 3DHeatmap example
 on [deck.gl](http://deck.gl) website.
@@ -9,7 +9,7 @@ on [deck.gl](http://deck.gl) website.
 npm install
 ```
 
-- Unzip the `data` folder.
+- Unzip the `data.zip` folder.
 
 - Add your [Mapbox access token](https://www.mapbox.com/help/define-access-token/) by adding a `creds.js` file containing
 
