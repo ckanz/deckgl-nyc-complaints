@@ -6,7 +6,6 @@ import tokens from './creds.js' // gitignored
 import DeckGLOverlay from './deckgl-overlay.js';
 
 import {csv as requestCsv} from 'd3-request';
-console.log(tokens)
 const MAPBOX_TOKEN = tokens.mapboxToken;
 
 class Root extends Component {
@@ -26,7 +25,6 @@ class Root extends Component {
       if (!error) {
         const data = response.map(d => ([Number(d.lng), Number(d.lat)]));
         this.setState({data});
-        console.log(data[0]);
       }
     });
   }
