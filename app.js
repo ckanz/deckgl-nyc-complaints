@@ -26,6 +26,7 @@ class Root extends Component {
       if (!error) {
         const data = response.map(d => ([Number(d.lng), Number(d.lat)]));
         this.setState({data});
+        console.log(data[0]);
       }
     });
   }
