@@ -1,10 +1,8 @@
-/* global window,document */
 import React, {Component} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 import tokens from './creds.js' // gitignored
 import DeckGLOverlay from './deckgl-overlay.js';
-
 import {csv as requestCsv} from 'd3-request';
 const MAPBOX_TOKEN = tokens.mapboxToken;
 

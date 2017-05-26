@@ -11,10 +11,10 @@ const LIGHT_SETTINGS = {
   numberOfLights: 2
 };
 
-const MAX_VALUE = 400;
+const MAX_VALUE = 200;
 
 const colorRange = [
-  [200, 255, 255],
+  // [200, 255, 255],
   [200, 200, 200],
   [200, 150, 150],
   [200, 100, 100],
@@ -25,7 +25,7 @@ const colorRange = [
 const elevationScale = {min: 1, max: MAX_VALUE};
 
 const defaultProps = {
-  radius: 50,
+  radius: 25,
   upperPercentile: 100,
   coverage: 1
 };
@@ -40,7 +40,7 @@ export default class DeckGLOverlay extends Component {
     return {
       longitude: -74.013143,
       latitude: 40.612691,
-      zoom: 10,
+      zoom: 11,
       minZoom: 5,
       maxZoom: 15,
       pitch: 50,
@@ -115,7 +115,7 @@ export default class DeckGLOverlay extends Component {
       new HexagonLayer({
         id: 'heatmap',
         colorRange,
-        colorDomain: [0,5],
+        colorDomain: [0,MAX_VALUE],
         coverage,
         data,
         elevationRange: [0, MAX_VALUE],
