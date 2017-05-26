@@ -1,4 +1,4 @@
-#NYC Complaint Heatmap
+# NYC Complaint Heatmap
 
 This is a project visualising [NYC complaint data](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i) using the 3DHeatmap example on [deck.gl](http://deck.gl) website. The data has been stripped down to the latitude and longitude columns only to reduce its file size.
 
