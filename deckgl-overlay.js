@@ -11,19 +11,21 @@ const LIGHT_SETTINGS = {
   numberOfLights: 2
 };
 
+const MAX_VALUE = 200;
+
 const colorRange = [
-  [1, 152, 189],
-  [73, 227, 206],
-  [216, 254, 181],
-  [254, 237, 177],
-  [254, 173, 84],
-  [209, 55, 78]
+  // [200, 255, 255],
+  [200, 200, 200],
+  [200, 150, 150],
+  [200, 100, 100],
+  [200, 50, 50],
+  [200, 0, 0]
 ];
 
-const elevationScale = {min: 1, max: 200};
+const elevationScale = {min: 1, max: MAX_VALUE};
 
 const defaultProps = {
-  radius: 10,
+  radius: 25,
   upperPercentile: 100,
   coverage: 1
 };
@@ -36,9 +38,9 @@ export default class DeckGLOverlay extends Component {
 
   static get defaultViewport() {
     return {
-      longitude: -73.913143,
-      latitude: 40.712691,
-      zoom: 12,
+      longitude: -74.013143,
+      latitude: 40.612691,
+      zoom: 11,
       minZoom: 5,
       maxZoom: 15,
       pitch: 50,
@@ -81,7 +83,7 @@ export default class DeckGLOverlay extends Component {
   }
 
   _startAnimate() {
-    this.intervalTimer = window.setInterval(this._animateHeight, 20);
+    this.intervalTimer = window.setInterval(this._animateHeight, 5);
   }
 
   _stopAnimate() {
@@ -90,10 +92,10 @@ export default class DeckGLOverlay extends Component {
   }
 
   _animateHeight() {
-    if (this.state.elevationScale === elevationScale.max) {
+    if (this.state.elevationScale >= elevationScale.max) {
       this._stopAnimate();
     } else {
-      this.setState({elevationScale: this.state.elevationScale + 1});
+      this.setState({elevationScale: this.state.elevationScale + 5});
     }
   }
 
@@ -113,17 +115,15 @@ export default class DeckGLOverlay extends Component {
       new HexagonLayer({
         id: 'heatmap',
         colorRange,
-        colorDomain: [0,300],
+        colorDomain: [0,MAX_VALUE],
         coverage,
         data,
-        elevationRange: [0, 200],
+        elevationRange: [0, MAX_VALUE],
         elevationScale: this.state.elevationScale,
         extruded: true,
         getPosition: d => d,
         lightSettings: LIGHT_SETTINGS,
-        onHover: this.props.onHover,
-        opacity: 1,
-        pickable: Boolean(this.props.onHover),
+        opacity: 0.2,
         radius,
         upperPercentile
       })
