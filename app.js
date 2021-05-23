@@ -4,10 +4,9 @@ import { render } from 'react-dom'
 import { StaticMap } from 'react-map-gl'
 import { HexagonLayer } from '@deck.gl/aggregation-layers'
 import { AmbientLight, PointLight, LightingEffect } from '@deck.gl/core'
-import { mapboxToken } from './creds.js'
 import { csv } from 'd3-request'
-
-const DATA_URL = '/data/nyc-complaint-data.csv'
+import { mapboxToken } from './creds.js'
+import csvFile from './data/nyc-complaint-data.csv'
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.0,
@@ -40,7 +39,7 @@ const colorRange = [
 ]
 
 export const renderToDOM = container => {
-  csv(DATA_URL, (error, data) => {
+  csv(csvFile, (error, data) => {
     if (error) {
       console.error(error)
       return

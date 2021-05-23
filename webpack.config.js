@@ -1,14 +1,11 @@
-const CONFIG = {
-  mode: 'development',
-
+module.exports = {
+  // mode: 'development',
   entry: {
     app: './app.js'
   },
-
   output: {
     library: 'App'
   },
-
   module: {
     rules: [
       {
@@ -18,9 +15,11 @@ const CONFIG = {
         options: {
           presets: ['@babel/preset-react']
         }
+      },
+      {
+        test: /\.csv$/,
+        loader: 'file-loader'
       }
     ]
   }
 }
-
-module.exports = env => (CONFIG)
