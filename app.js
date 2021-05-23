@@ -1,12 +1,13 @@
 import React from 'react'
+import DeckGL from '@deck.gl/react'
 import { render } from 'react-dom'
 import { StaticMap } from 'react-map-gl'
 import { HexagonLayer } from '@deck.gl/aggregation-layers'
-import DeckGL from '@deck.gl/react'
+import { AmbientLight, PointLight, LightingEffect } from '@deck.gl/core'
+import { mapboxToken } from './creds.js'
+import { csv } from 'd3-request'
 
-// Source data CSV
-const DATA_URL =
-  'https://raw.githubusercontent.com/ckanz/deckgl-nyc-complaints/master/data/nyc-complaint-data.csv'; // eslint-disable-line
+const DATA_URL = '/data/nyc-complaint-data.csv'
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.0,
@@ -18,51 +19,55 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 }
 
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json'
+const lightingEffect = new LightingEffect({
+  ambientLight: new AmbientLight(),
+  pointLight1: new PointLight()
+})
 
-/* eslint-disable react/no-deprecated */
-export default function App ({
-  data,
-  mapStyle = MAP_STYLE,
-  radius = 25,
-  upperPercentile = 100,
-  coverage = 0.8
-}) {
-  const layers = [
-    new HexagonLayer({
-      id: 'heatmap',
-      coverage,
-      data,
-      elevationRange: [0, 200],
-      elevationScale: data && data.length ? 50 : 0,
-      extruded: true,
-      getPosition: d => d,
-      radius,
-      upperPercentile,
-      transitions: {
-        elevationScale: 200
-      }
-    })
-  ]
-
-  return (
-    <DeckGL
-      layers={layers}
-      initialViewState={INITIAL_VIEW_STATE}
-      controller
-    >
-      <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing />
-    </DeckGL>
-  )
+const material = {
+  ambient: 0.64,
+  diffuse: 0.6,
+  shininess: 32,
+  specularColor: [51, 51, 51]
 }
 
-export function renderToDOM (container) {
-  render(<App />, container)
+const colorRange = [
+  [200, 200, 200],
+  [200, 150, 150],
+  [200, 100, 100],
+  [200, 50, 50],
+  [200, 0, 0]
+]
 
-  require('d3-request').csv(DATA_URL, (error, response) => {
-    if (!error) {
-      const data = response.map(d => [Number(d.lng), Number(d.lat)])
-      render(<App data={data} />, container)
+export const renderToDOM = container => {
+  csv(DATA_URL, (error, data) => {
+    if (error) {
+      console.error(error)
+      return
     }
+    render(
+      <DeckGL
+        layers={[new HexagonLayer({
+          id: 'heatmap',
+          colorDomain: [0, 1600],
+          elevationScale: 50,
+          extruded: true,
+          getPosition: d => [Number(d.lng), Number(d.lat)],
+          radius: 25,
+          data,
+          colorRange,
+          material
+        })]}
+        effects={[lightingEffect]}
+        initialViewState={INITIAL_VIEW_STATE}
+        controller
+      >
+        <StaticMap
+          reuseMaps
+          mapStyle='mapbox://styles/mapbox/dark-v10'
+          mapboxApiAccessToken={mapboxToken}
+          preventStyleDiffing
+        />
+      </DeckGL>, container)
   })
 }
