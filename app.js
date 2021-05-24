@@ -1,67 +1,72 @@
-import React, {Component} from 'react';
-import {render} from 'react-dom';
-import MapGL from 'react-map-gl';
-import tokens from './creds.js' // gitignored
-import DeckGLOverlay from './deckgl-overlay.js';
-import {csv as requestCsv} from 'd3-request';
-const MAPBOX_TOKEN = tokens.mapboxToken;
+import React from 'react'
+import DeckGL from '@deck.gl/react'
+import { render } from 'react-dom'
+import { StaticMap } from 'react-map-gl'
+import { HexagonLayer } from '@deck.gl/aggregation-layers'
+import { AmbientLight, PointLight, LightingEffect } from '@deck.gl/core'
+import { csv } from 'd3-request'
+import { mapboxToken } from './creds.js'
+import csvFile from './data/nyc-complaint-data.csv'
 
-class Root extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      viewport: {
-        ...DeckGLOverlay.defaultViewport,
-        width: 500,
-        height: 500
-      },
-      data: null
-    };
-
-    requestCsv('./data/nyc-complaint-data.csv', (error, response) => {
-      if (!error) {
-        const data = response.map(d => ([Number(d.lng), Number(d.lat)]));
-        this.setState({data});
-      }
-    });
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this._resize.bind(this));
-    this._resize();
-  }
-
-  _resize() {
-    this._onChangeViewport({
-      width: window.innerWidth,
-      height: window.innerHeight
-    });
-  }
-
-  _onChangeViewport(viewport) {
-    this.setState({
-      viewport: {...this.state.viewport, ...viewport}
-    });
-  }
-
-  render() {
-    const {viewport, data} = this.state;
-
-    return (
-      <MapGL
-        {...viewport}
-        mapStyle="mapbox://styles/mapbox/dark-v9"
-        perspectiveEnabled={true}
-        onChangeViewport={this._onChangeViewport.bind(this)}
-        mapboxApiAccessToken={MAPBOX_TOKEN}>
-        <DeckGLOverlay
-          viewport={viewport}
-          data={data || []}
-        />
-      </MapGL>
-    );
-  }
+const INITIAL_VIEW_STATE = {
+  longitude: -74.0,
+  latitude: 40.68,
+  zoom: 10.5,
+  minZoom: 5,
+  maxZoom: 15,
+  pitch: 50,
+  bearing: 0
 }
 
-render(<Root />, document.body.appendChild(document.createElement('div')));
+const lightingEffect = new LightingEffect({
+  ambientLight: new AmbientLight(),
+  pointLight1: new PointLight()
+})
+
+const material = {
+  ambient: 0.64,
+  diffuse: 0.6,
+  shininess: 32,
+  specularColor: [51, 51, 51]
+}
+
+const colorRange = [
+  [200, 200, 200],
+  [200, 150, 150],
+  [200, 100, 100],
+  [200, 50, 50],
+  [200, 0, 0]
+]
+
+export const renderToDOM = container => {
+  csv(csvFile, (error, data) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    render(
+      <DeckGL
+        layers={[new HexagonLayer({
+          id: 'heatmap',
+          colorDomain: [0, 1600],
+          elevationScale: 50,
+          extruded: true,
+          getPosition: d => [Number(d.lng), Number(d.lat)],
+          radius: 25,
+          data,
+          colorRange,
+          material
+        })]}
+        effects={[lightingEffect]}
+        initialViewState={INITIAL_VIEW_STATE}
+        controller
+      >
+        <StaticMap
+          reuseMaps
+          mapStyle='mapbox://styles/mapbox/dark-v10'
+          mapboxApiAccessToken={mapboxToken}
+          preventStyleDiffing
+        />
+      </DeckGL>, container)
+  })
+}

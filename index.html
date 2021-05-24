@@ -16,12 +16,16 @@
       }
 
       #headline {
+        position: fixed;
+        z-index: 1;
+        background-color: rgba(0, 0, 0, 0.8);
+        width: 100%;
         padding-left: 25px;
         border-width: 2px;
-        border-bottom-width: 5px;
         border-bottom-color: #222222;
         border-bottom-style: solid;
       }
+      #headline > div { width: 85%; }
     </style>
   </head>
   <body>
@@ -32,7 +36,10 @@
         <div>Data: <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">NYPD Complaint Data</a>. Code: <a href="https://github.com/ckanz/deckgl-nyc-complaints">ckanz/deckgl-nyc-complaints</a>. Made with <a href="https://github.com/uber/deck.gl">deck.gl</a>.</div>
       </p>
     </div>
-    <script src='bundle.js'></script>
-    <div>iguhsdofsd</div>
+    <div id="app"></div>
   </body>
+    <script type="text/javascript" src="app.js"></script>
+    <script>
+      App.renderToDOM(document.getElementById('app'))
+    </script>
 </html>
